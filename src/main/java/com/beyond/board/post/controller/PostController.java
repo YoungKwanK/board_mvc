@@ -11,6 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,27 +23,36 @@ public class PostController {
 
     private final PostService postService;
 
+    @GetMapping("/create")
+    public String postCreateScreen() {
+        return "post/post_register";
+    }
+
     @PostMapping("/create")
     public String create(@Valid PostCreateDto postCreateDTO) {
         postService.save(postCreateDTO);
-        return null;
+        return "redirect:/post/list";
     }
+
+//    @GetMapping("/list")
+//    public String findAll(Model model) {
+//        List<PostListDto> postListDTO = postService.findAll();
+//        model.addAttribute("postListDTO", postListDTO);
+//        return "post/post_list";
+//    }
 
     @GetMapping("/list")
-    public String findAll() {
-        List<PostListDto> postListDTO = postService.findAll();
-        return null;
-    }
-
-    @GetMapping("/listPaging")
-    public String findAll(@PageableDefault(size = 5, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
+    public String findAll(@PageableDefault(size = 5, sort = "id", direction = Sort.Direction.DESC) Pageable pageable,
+                          Model model) {
         Page<PostListDto> postListDTO = postService.findAll(pageable);
-        return null;
+        model.addAttribute("postListDTO", postListDTO);
+        return "post/post_list";
     }
 
     @GetMapping("/detail/{id}")
-    public String detail(@PathVariable Long id) {
+    public String detail(@PathVariable Long id, Model model) {
         PostDetailDto postDetailDTO = postService.findById(id);
-        return null;
+        model.addAttribute("post", postDetailDTO);
+        return "/post/post_detail";
     }
 }

@@ -6,6 +6,7 @@ import com.beyond.board.author.service.AuthorService;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -29,15 +30,17 @@ public class AuthorController {
     }
 
     @GetMapping("/list")
-    public String findByAll(){
+    public String findByAll(Model model){
         List<AuthorListDto> authorListDtoList = authorService.findAll();
-        return null;
+        model.addAttribute("authorList", authorListDtoList);
+        return "/author/author_list";
     }
 
     @GetMapping("/detail/{id}")
-    public String findById(@PathVariable Long id) {
+    public String findById(@PathVariable Long id, Model model) {
         AuthorDetailDto authorDetailDto = authorService.findById(id);
-        return null;
+        model.addAttribute("authorDetail", authorDetailDto);
+        return "author/author_detail";
     }
 
     @PatchMapping("/updatepw")
