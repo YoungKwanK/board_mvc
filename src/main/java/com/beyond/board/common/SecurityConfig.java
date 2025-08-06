@@ -13,12 +13,27 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 @EnableMethodSecurity
 public class SecurityConfig {
+
+    private final LoginSuccessHandler loginSuccessHandler;
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity
                 .csrf(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
-                .authorizeRequests().antMatchers("/**").permitAll().anyRequest().authenticated()
+                .authorizeRequests().antMatchers("/", "/author/create", "/author/login").permitAll().anyRequest().authenticated()
+                .and()
+                .formLogin()
+                    .loginPage("/author/login")
+//                사전에 구현돼있는 doLogin메서드 그대로 사용
+                    .loginProcessingUrl("/doLogin")
+                    .usernameParameter("email")
+                    .passwordParameter("password")
+                    .successHandler(loginSuccessHandler)
+                .and()
+                .logout()
+                .logoutUrl("/doLogout")
+                .logoutSuccessUrl("/")
                 .and()
                 .build();
     }

@@ -29,6 +29,11 @@ public class AuthorController {
         return "redirect:/";
     }
 
+    @GetMapping("/login")
+    public String loginScreen(){
+        return "author/author_login";
+    }
+
     @GetMapping("/list")
     public String findByAll(Model model){
         List<AuthorListDto> authorListDtoList = authorService.findAll();

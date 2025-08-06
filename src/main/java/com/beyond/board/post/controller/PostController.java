@@ -45,6 +45,7 @@ public class PostController {
     public String findAll(@PageableDefault(size = 5, sort = "id", direction = Sort.Direction.DESC) Pageable pageable,
                           Model model) {
         Page<PostListDto> postListDTO = postService.findAll(pageable);
+        System.out.println(postListDTO);
         model.addAttribute("postListDTO", postListDTO);
         return "post/post_list";
     }
