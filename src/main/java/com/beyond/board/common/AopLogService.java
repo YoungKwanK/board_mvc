@@ -3,10 +3,9 @@ package com.beyond.board.common;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.extern.slf4j.Slf4j;
+import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
-import org.aspectj.lang.annotation.Around;
-import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Pointcut;
+import org.aspectj.lang.annotation.*;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -27,18 +26,34 @@ public class AopLogService {
     
 //    controller에 진입하기 전에 사용자 요청을 log출력. 핵심 로직 수행 후 log 출력.
 //    방법1. around 어노테이션을 통해 controller에 걸쳐져 있는 코드 패턴 사용
-    @Around("controllerPointcut()")
-//    joinPoint는 사용자가 실행하려고 하는 코드를 의미하고, 위에서 정의한 pointcut을 의미
-    public Object controllerLogger(ProceedingJoinPoint joinPoint) throws Throwable {
+//    @Around("controllerPointcut()")
+////    joinPoint는 사용자가 실행하려고 하는 코드를 의미하고, 위에서 정의한 pointcut을 의미
+//    public Object controllerLogger(ProceedingJoinPoint joinPoint) throws Throwable {
+//        log.info("aop start");
+//        log.info("method 명 : " + joinPoint.getSignature().getName());
+//
+////        직접 HttpServletRequest객체에서 사용자 요청정보
+//        ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+//        HttpServletRequest request = attributes.getRequest();
+//        log.info("HTTP 메서드 : " + request.getMethod());
+//        Map<String, String[]> parameterMap = request.getParameterMap();
+//        ObjectMapper objectMapper = new ObjectMapper();
+//        ObjectNode objectNode = objectMapper.valueToTree(parameterMap);
+//        log.info("사용자 input값 : " + objectNode);
+//
+//        //        대상이 되는 controller 로직 수행
+//        Object object = joinPoint.proceed();
+//
+//        log.info("aop end");
+//        return object;
+//    }
+
+//    방법2. Before, After어노테이션 사용
+    @Before("controllerPointcut()")
+    public void beforeController(JoinPoint joinPoint) {
         log.info("aop start");
-
-//        대상이 되는 controller 로직 수행
-        Object object = joinPoint.proceed();
-
-        log.info("aop end");
         log.info("method 명 : " + joinPoint.getSignature().getName());
-
-//        직접 HttpServletRequest객체에서 사용자 요청정보
+//        직접 HttpServletRequest객체에서 사용자 요청 정보 추출
         ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         HttpServletRequest request = attributes.getRequest();
         log.info("HTTP 메서드 : " + request.getMethod());
@@ -46,9 +61,11 @@ public class AopLogService {
         ObjectMapper objectMapper = new ObjectMapper();
         ObjectNode objectNode = objectMapper.valueToTree(parameterMap);
         log.info("사용자 input값 : " + objectNode);
-        return object;
     }
 
-//    방법2. Before, After어노테이션 사용
+    @After("controllerPointcut()")
+    public void afterController(JoinPoint joinPoint) {
+        log.info("aop end");
+    }
     
 }
